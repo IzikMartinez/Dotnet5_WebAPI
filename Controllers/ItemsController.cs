@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DOTNET_API.DTOS;
 using DOTNET_API.Entities;
 using DOTNET_API.Repositories;
@@ -20,18 +21,18 @@ namespace DOTNET_API.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<ItemDTO> GetItems()
+        public async Task<IEnumerable<ItemDTO>> GetItemsAsync()
         {
-            var items = _repository.GetItems().Select(item => item.AsDTO());
+            var items = (await _repository.GetItemsAsync())
+                .Select(item => item.AsDTO());
             return items;
 
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ItemDTO> GetItem(Guid id)
+        public async Task<ActionResult<ItemDTO>> GetItemAsync(Guid id)
         {
-            var item = _repository.GetItem(id);
-
+            var item = await _repository.GetItemAsync(id);
             if (item is null)
             {
                 return NotFound();
@@ -41,7 +42,7 @@ namespace DOTNET_API.Controllers
 
 
         [HttpPost]
-        public ActionResult<ItemDTO> CreateItem(CreateItemDTO itemDTO)
+        public async Task<ActionResult<ItemDTO>> CreateItemAsync(CreateItemDTO itemDTO)
         {
             Item item = new()
             {
@@ -51,16 +52,15 @@ namespace DOTNET_API.Controllers
                 CreatedDate = DateTimeOffset.UtcNow
             };
 
-            _repository.CreateItem(item);
+            await _repository.CreateItemAsync(item);
 
-            return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item.AsDTO());
+            return CreatedAtAction(nameof(GetItemAsync), new { id = item.Id }, item.AsDTO());
         }
 
         [HttpPut("{id}")]
-        public ActionResult UpdateItem(Guid id, UpdateItemDTO itemDTO)
+        public async Task<ActionResult> UpdateItemAsync(Guid id, UpdateItemDTO itemDTO)
         {
-            var existingItem = _repository.GetItem(id);
-
+            var existingItem = await _repository.GetItemAsync(id);
             if (existingItem is null)
             {
                 return NotFound();
@@ -72,25 +72,23 @@ namespace DOTNET_API.Controllers
                 Price = itemDTO.Price
             };
 
-            _repository.UpdateItem(updatedItem);
+            await _repository.UpdateItemAsync(updatedItem);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeleteItem(Guid id)
+        public async Task<ActionResult> DeleteItemAsync(Guid id)
         {
-            var existingItem = _repository.GetItem(id);
+            var existingItem = await _repository.GetItemAsync(id);
 
             if (existingItem is null)
             {
                 return NotFound();
             }
 
-            _repository.DeleteItem(id);
+            await _repository.DeleteItemAsync(id);
 
             return NoContent();
-
-
         }
     }
 }
