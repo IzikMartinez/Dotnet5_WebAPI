@@ -1,6 +1,6 @@
-﻿This program has its own repository, and can be run from VS Code by hitting F5. 
+﻿This program reads and writes to a MongoDB instance running on port 27017 with host name "localhost"
 
-The API can be tested using Postman or Swagger using the URI https://localhost:5001
+The API can be tested with Postman or Swagger using the URI https://localhost:5001
 
 POST and GET operations can be sent to https://localhost:5001/items. Using GET like this will return all items in the database
 
